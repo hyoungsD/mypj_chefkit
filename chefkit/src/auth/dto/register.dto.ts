@@ -22,7 +22,7 @@ export class RegisterDto {
       minSymbols: 0,
     },
     {
-      message: '비밀번호는 영문, 숫자 포함 최소 6자 이상).',
+      message: '비밀번호는 영문 소문자, 숫자 포함 최소 6자 이상).',
     },
   )
   password: string;

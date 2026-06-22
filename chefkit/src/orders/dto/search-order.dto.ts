@@ -2,9 +2,10 @@
 import { Type } from "class-transformer";
 import { IsEnum, IsIn, IsInt, IsOptional, Min } from "class-validator";
 import { OrderStatus } from '@prisma/client';
+import { PageRequestDto } from "../../common/dto/page-request.dto";
 
 
-export class SearchOrderDto {
+export class SearchOrderDto extends PageRequestDto {
 
   @IsOptional()
   @IsEnum(OrderStatus)
@@ -35,15 +36,4 @@ export class SearchOrderDto {
   @IsIn(['asc', 'desc'])
   orderByDate?: 'asc' | 'desc';
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  limit?: number = 10;
 }

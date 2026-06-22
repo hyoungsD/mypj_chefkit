@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { ChangePasswordDto, UpdateMemberDto } from './dto/update-member.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { AuthMember } from '../common/current-member.decorator';
 import { SearchMemberDto } from './dto/search-member.dto';
 import { contains } from 'class-validator';
+import { resourceUsage } from 'process';
 
 @Injectable()
 export class MembersService {
@@ -22,7 +23,6 @@ export class MembersService {
 
   async findAll(query: SearchMemberDto, member) {
     // 관리자 권한 확인
-    console.log('---member----', member)
     if(member.role !== 'ADMIN') throw new ForbiddenException(`회원 조회 권한이 없습니다.`)
   
     const where: any = {};
@@ -88,6 +88,27 @@ export class MembersService {
     }
     return this.update(member.id, data);
   }
+
+  // 내 비밀번호 수정
+  async changeMyPassword(dto: ChangePasswordDto, member: AuthMember){
+    const {currentPassword, newPassword} = dto;
+    // 저장된 비밀번호 가져오기
+    const user = await this.prisma.member.findUnique({
+      where: {id: member.id},
+      select: {password: true}
+    })
+    // 현재 비밀번호 확인하기
+    if(!user || !(await bcrypt.compare(currentPassword, user.password))){
+      throw new UnauthorizedException(`비밀번호가 일치하지 않습니다`)
+    }
+    // 새로운 비밀번호 저장하기
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await this.prisma.member.update({
+      where: {id: member.id}, data: {password: hashed}
+    })
+    return {result: true};
+  }
+
 
   // 관리자가 특정회원정보 수정
   async updateAdmin(id: number, updateMemberDto: UpdateMemberDto, member: AuthMember){

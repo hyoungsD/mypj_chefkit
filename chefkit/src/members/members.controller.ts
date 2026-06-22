@@ -49,8 +49,18 @@ export class MembersController {
     @Body() updateMemberDto: UpdateMemberDto, 
     @CurrentMember() member: AuthMember
   ) {
-    console.log('-- MembersController : updateMy--', member)
     return this.membersService.updateMy(updateMemberDto, member);
+  }
+
+  @Patch('myinfo/changePw')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({summary: '로그인한 회원 비밀번호 변경'})
+  changeMyPassword(
+    @Body() dto: ChangePasswordDto, 
+    @CurrentMember() member: AuthMember
+  ){
+    return this.membersService.changeMyPassword(dto, member);
   }
 
 
