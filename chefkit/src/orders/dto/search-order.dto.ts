@@ -1,0 +1,49 @@
+
+import { Type } from "class-transformer";
+import { IsEnum, IsIn, IsInt, IsOptional, Min } from "class-validator";
+import { OrderStatus } from '@prisma/client';
+
+
+export class SearchOrderDto {
+
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  memberId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  chefId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  mealkitId?: number;
+
+  @IsOptional()
+  startDate?: string;
+
+  @IsOptional()
+  endDate?: string;
+
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  orderByDate?: 'asc' | 'desc';
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  limit?: number = 10;
+}
