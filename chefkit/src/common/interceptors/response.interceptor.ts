@@ -17,7 +17,7 @@ export class ResponseInterceptor implements NestInterceptor {
       map((data) => ({
         statusCode: 200,
         message: 'success',
-        result: data,
+        chefkit: data,
       })),
     );
   }

@@ -7,7 +7,11 @@ const prisma = new PrismaClient();
 
 
 async function main() {
-  const password = await bcrypt.hash('admin1234', 10);
+  const initPassword = process.env.ADMIN_INIT_PASSWORD;
+  if (!initPassword) {
+    throw new Error('환경 변수에 ADMIN_INIT_PASSWORD가 정의되지 않았습니다.');
+  }
+  const password = await bcrypt.hash(initPassword, 10);
 
   const admin = await prisma.member.upsert({
     where: {email: 'admin@chefkit.com'},
